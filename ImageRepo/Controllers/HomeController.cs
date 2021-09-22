@@ -20,7 +20,16 @@ namespace ImageRepo.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            // temp delete method
+            var user = new UserModel() { Id = 7 };
+            using (var db = new ImageContext())
+            {
+                //bascially finds the user in the db with id 7 and removes it
+                db.Attach(user);
+                db.Remove(user);
+                db.SaveChanges();
+            }
+                return View();
         }
 
         public IActionResult Privacy()
@@ -32,6 +41,78 @@ namespace ImageRepo.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+        
+        [HttpPost]
+        public IActionResult UpdateUser(UserModel user)
+        {
+
+            using (var db = new ImageContext())
+            {
+                var userTemp = db.Users.Where(u => u.Id == user.Id).FirstOrDefault();
+
+                TempData["userTemp"] = userTemp;
+                //db.SaveChanges();
+            }
+
+            return View("UpdateUser");
+        }
+        public IActionResult UpdateUserFinal(UserModel user)
+        {
+            using(var db = new ImageContext())
+            {
+                var UpdateUser = db.Users.Where(u => u.Id == user.Id).FirstOrDefault();
+
+                UpdateUser.Name = user.Name;
+                UpdateUser.UserName = user.UserName;
+                UpdateUser.Age = user.Age;
+                UpdateUser.Email = user.Email;
+
+                db.SaveChanges();
+            }
+
+            return View("AddUsers");
+        }
+        public IActionResult SearchUser(string searchTerm)
+        {
+            List<UserModel> users = new List<UserModel>();
+
+            using (var db = new ImageContext())
+            {
+                users = db.Users.Where(user => user.Name.ToLower().Contains(searchTerm.ToLower())).ToList();
+            }
+
+            TempData["users"] = users;
+
+            return View("AddUsers");
+        }
+        public IActionResult AddUsers()
+        {
+            List<UserModel> users = new List<UserModel>();
+
+            using(var db = new ImageContext())
+            {
+                users = db.Users.ToList();
+            }
+
+            TempData["users"] = users;
+
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult AddUsers(UserModel user)
+        {
+            if (ModelState.IsValid)
+            {
+                using (var db = new ImageContext())
+                {
+                    db.Add(user);
+                    db.SaveChanges();
+                }
+            }
+            
+            return View();
         }
     }
 }

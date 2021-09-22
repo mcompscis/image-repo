@@ -1,0 +1,69 @@
+﻿@model ImageRepo.Models.UserModel
+@{
+    ViewData["Title"] = "AddUsers";
+
+    List<UserModel> users = TempData["users"] as List<UserModel>;
+}
+
+<form action="/home/addusers" method="post">
+    <div class="form-group">
+        <label>Email address</label>
+        <input type="email" placeholder="Enter email" asp-for="Email">
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label>Name</label>
+        <input type="text" asp-for="Name">
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label>Username</label>
+        <input type="text" asp-for="UserName">
+        <span asp-validation-for="UserName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label>Age</label>
+        <input type="number" asp-for="Age" />
+        <span asp-validation-for="Age" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+<div class="container">
+    @if(users != null && users.Count >= 1)
+    {
+    <form action="/Home/SearchUser" method="post">
+        <div class="form-group">
+            <label>Search</label>
+            <input type="text" name="searchTerm"/>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <table class="table table-dark">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Age</th>
+                <th scope="col">Username</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in users)
+                {
+                    <tr>
+                        <td>@user.Name</td>
+                        <td>@user.Age</td>
+                        <td>@user.UserName</td>
+                        <td>
+                            <form asp-action="UpdateUser" asp-controller="Home" method="post">
+                                <input type="hidden" asp-for="Id" value="@user.Id" />
+                                <button type="submit" class="btn btn-success">Update</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+        </tbody>
+    </table>
+    }
+</div>
+
