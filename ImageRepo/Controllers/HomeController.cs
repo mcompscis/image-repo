@@ -21,14 +21,14 @@ namespace ImageRepo.Controllers
         public IActionResult Index()
         {
             // temp delete method
-            var user = new UserModel() { Id = 7 };
-            using (var db = new ImageContext())
-            {
-                //bascially finds the user in the db with id 7 and removes it
-                db.Attach(user);
-                db.Remove(user);
-                db.SaveChanges();
-            }
+            //var user = new UserModel() { Id = 7 };
+            //using (var db = new ImageContext())
+            //{
+             //   //bascially finds the user in the db with id 7 and removes it
+              //  db.Attach(user);
+               // db.Remove(user);
+                //db.SaveChanges();
+            //}
                 return View();
         }
 
@@ -113,6 +113,35 @@ namespace ImageRepo.Controllers
             }
             
             return View();
+        }
+        [HttpGet]
+        public IActionResult ImageView()
+        {
+            List<ImageModel> images = new List<ImageModel>();
+
+            using (var db = new ImageContext())
+            {
+                images = db.Image.ToList();
+            }
+
+            TempData["images"] = images;
+
+            return View("ImageView");
+        }
+
+        [HttpPost]
+        public IActionResult ImageView(ImageModel image)
+        {
+            if (ModelState.IsValid)
+            {
+                using (var db = new ImageContext())
+                {
+                    db.Add(image);
+                    db.SaveChanges();
+                }
+            }
+
+            return View("ImageView");
         }
     }
 }

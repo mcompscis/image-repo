@@ -1,0 +1,9 @@
+﻿@model ImageRepo.Models.ImageModel
+@{ 
+    ViewData["Title"] = "ImageView";
+
+    List<ImageModel> images = TempData["images"] as List<ImageModel>;
+}
+
+<h1>ImageView</h1>
+

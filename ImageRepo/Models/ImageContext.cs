@@ -10,6 +10,7 @@ namespace ImageRepo.Models
     {
         public DbSet<UserModel> Users { get; set; }
         // public DbSet<UserModel> OTHERCLASSES { get; set; }
+        public DbSet<ImageModel> Image { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder options)
              => options.UseSqlite(@"Data Source=C:\Users\mayank\source\repos\ImageRepo2\Image.db");
     }
