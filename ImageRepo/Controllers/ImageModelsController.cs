@@ -106,15 +106,42 @@ namespace ImageRepo.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,ProductImage")] ImageModel imageModel)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,ProductImage")] ImageModel imageModel, List<IFormFile> ProductImage)
         {
-            if (id != imageModel.Id)
+            /*if (id != imageModel.Id)
+            {
+                return NotFound();
+            }*/
+
+            var newImageName = imageModel.Name;
+
+            imageModel = await _context.Image
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (imageModel == null)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
+
+                // modularize this code into another method-----------------------
+                foreach (var item in ProductImage)
+                {
+                    if (item.Length > 0)
+                    {
+                        using (var stream = new MemoryStream())
+                        {
+                            await item.CopyToAsync(stream);
+                            imageModel.ProductImage = stream.ToArray();
+                        }
+                    }
+                }
+                // modularize ----------------------------------------------------
+                
+                imageModel.Name = newImageName;
+
                 try
                 {
                     _context.Update(imageModel);
